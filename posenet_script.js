@@ -1,4 +1,3 @@
-
 /* ===
 Adapted Via https://github.com/ml5js/ml5-examples/tree/master/p5js/PoseNet
 === */
@@ -78,7 +77,7 @@ var poly = new Tone.PolySynth({
 
 poly.volume.value = -10;
 Tone.Transport.scheduleRepeat(playChord, "1m");
-var delay1 = new Tone.PingPongDelay("8t", 0.1).toMaster();
+var delay1 = new Tone.PingPongDelay("8t", 0.01).toMaster();
 var reverb = new Tone.JCReverb(0).connect(Tone.Master);
 var dist = new Tone.Distortion(0).toMaster();
 
@@ -86,26 +85,26 @@ var meter = new Tone.Meter();
 Tone.Master.chain(meter);
 
 
-  var grainplayer = new Tone.GrainPlayer({
-      "url" : "https://s3.us-east-2.amazonaws.com/itpcloudassets/chants.wav",
-      "loop" : true,
-      "grainSize" : 1,
-      "overlap" : 1,
-      "reverse": true,
-      "playbackRate": 1
-    }).connect(delay1).connect(dist).connect(reverb).toMaster();
+var grainplayer = new Tone.GrainPlayer({
+    "url": "https://s3.us-east-2.amazonaws.com/itpcloudassets/chants.wav",
+    "loop": true,
+    "grainSize": 1,
+    "overlap": 1,
+    "reverse": true,
+    "playbackRate": 1
+}).connect(delay1).connect(dist).connect(reverb).toMaster();
 
 
-        var grainbass = new Tone.GrainPlayer({
-      "url" : "https://s3.us-east-2.amazonaws.com/itpcloudassets/bassdrone2.mp3",
-      "loop" : true,
-      "grainSize" : 1,
-      "overlap" : 0,
-      "reverse": false,
-      "playbackRate": 4
-    }).toMaster();
+var grainbass = new Tone.GrainPlayer({
+    "url": "https://s3.us-east-2.amazonaws.com/itpcloudassets/bassdrone2.mp3",
+    "loop": true,
+    "grainSize": 1,
+    "overlap": 0,
+    "reverse": false,
+    "playbackRate": 4
+}).toMaster();
 
-              grainplayer.start()
+grainplayer.start()
 grainplayer.volume.value = -10;
 // grainbass.volume.value = -5;
 Tone.Transport.start();
@@ -129,76 +128,32 @@ function drawSkeleton() {
     }
 }
 
-    var maxXValue = 0;
-    var minXValue = 10;
-    var avgXValue = 0;
+var maxXValue = 0;
+var minXValue = 10;
+var smoothedXValue = 0;
 
-      var maxYValue = 0;
-    var minYValue = 10;
-    var avgYValue = 0;
-
-//Optional Smoothing Function
-// function getValues() {
+var maxYValue = 0;
+var minYValue = 10;
+var smoothedYValue = 0;
 
 
-//     note2 = 5;
-//     note = 6
-//     for (let i = 0; i < poses.length; i++) {
-//         let skeleton = poses[i].pose.keypoints;
-
-//         // console.log(skeleton)
-//         // For every skeleton, loop through all body connections
-
-//         var leftElbowPosition = skeleton[7]["score"]
-//         var position = leftElbowPosition * 100;
-
-//         if (avgValue == 0) {
-
-//             avgValue = position;
-
-//         } else {
-//             avgValue = avgValue * 0.9 + position * 0.1;
-
-//         }
-//         console.log("Average : " + avgValue)
-
-
-//         if (position > maxValue) {
-//             maxValue = position;
-//         }
-
-//         if (position < minValue) {
-//             minValue = position;
-//         }
-
-//         console.log("MAX : " + maxValue)
-//         console.log("MIN : " + minValue)
-
-//         document.getElementById("position").innerText = avgValue;
-//         document.getElementById("camvalue").innerText = position;
-
-
-//         // console.log(leftElbowPosition * 100)
-//         var leftWristPosition = skeleton[9]["score"]
-//         // console.log("Initial Position of left " + leftWristPosition)
-//         var rightWristPosition = skeleton[10]["score"]
-//         if (leftElbowPosition > .1) {
-
-
-//             note = Math.floor(leftElbowPosition * 10)
-//             // console.log("Processed note will be " + note)
-
-//         }
-//     }
-
-// }
 
 var leftShoulder = 0;
 
 function playChord() {
 
+
+    // TODO 
+    // Write Default LED State 
     console.log(poses)
     if (poses.length > 0) {
+      // if poses.length > 0 then we have at least one person on the screen, begin feedback sequences
+
+
+        // TODO 
+        // Write Phase 1 of LED Feedback now that we are tracking bodies 
+
+
         var me = poses[0]
         console.log("MY DATA : ")
         console.log(me)
@@ -212,12 +167,14 @@ function playChord() {
         document.getElementById("mappedcamvalue").innerText = "Mapped and Smoothed Left Wrist : x= " + mappedXValue + " y=" + mappedYValue;
 
 
-        if (avgXValue == 0) {
-            avgXValue = mappedXValue;
+
+        // TODO : Possibly Refactor this ? 
+        // Smooth X values 
+        if (smoothedXValue == 0) {
+            smoothedXValue = mappedXValue;
 
         } else {
-            avgXValue = avgXValue * 0.9 + mappedXValue * 0.1;
-
+            smoothedXValue = smoothedXValue * 0.9 + mappedXValue * 0.1;
         }
 
         if (mappedXValue > maxXValue) {
@@ -228,13 +185,12 @@ function playChord() {
             minXValue = mappedXValue;
         }
 
-          // Smooth Y values
-           if (avgYValue == 0) {
-            avgYValue = mappedYValue;
+        // Smooth Y values
+        if (smoothedYValue == 0) {
+            smoothedYValue = mappedYValue;
 
         } else {
-            avgYValue = avgYValue * 0.9 + mappedYValue * 0.1;
-
+            smoothedYValue = smoothedYValue * 0.9 + mappedYValue * 0.1;
         }
 
         if (mappedYValue > maxYValue) {
@@ -245,28 +201,42 @@ function playChord() {
             minYValue = mappedYValue;
         }
 
+        document.getElementById("smoothedcamvalue").innerText = "Mapped and Smoothed Left Wrist : x= " + smoothedXValue + " y=" + smoothedYValue;
 
 
 
+        // if smoothedYValue is less that 7 initiate next feedback
+        if (smoothedYValue <= 7) {
 
-
-
-        document.getElementById("smoothedcamvalue").innerText = "Mapped and Smoothed Left Wrist : x= " + avgXValue + " y=" + avgYValue;
-
-        
-        if (avgYValue <= 7) {
-
+            // Bass starts 
             grainbass.start()
+
+            // TODO initiate LED circle of death and flashing 
+
+            // Todo intiate Servo 'waking up'
+
+           if (smoothedYValue <= 4) {
+
+              // TODO 
+              // Final Crazy LED Sequence going
+
+               // TODO 
+              // Initiate Balloon rising into the air
+
+                if (smoothedYValue <= 3) {
+
+              // TODO 
+              // Play voice recording of the dead 
+
+
+
         } else {
             grainbass.stop();
-
         }
 
 
 
 
-        let notes = ["C" + mappedXValue, "G" + Math.floor(mappedYValue), "E5", "B" + Math.floor(mappedYValue)];
-        // poly.triggerAttackRelease(notes, "4n");
 
     }
 
