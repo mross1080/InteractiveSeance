@@ -9,10 +9,6 @@ let poses = [];
 let keypoints = {}
 
 
-
-
-
-
 function setup() {
     createCanvas(640, 480);
     video = createCapture(VIDEO);
@@ -147,7 +143,7 @@ function playChord() {
     // Write Default LED State 
     console.log(poses)
     if (poses.length > 0) {
-      // if poses.length > 0 then we have at least one person on the screen, begin feedback sequences
+        // if poses.length > 0 then we have at least one person on the screen, begin feedback sequences
 
 
         // TODO 
@@ -207,37 +203,40 @@ function playChord() {
 
         // if smoothedYValue is less that 7 initiate next feedback
         if (smoothedYValue <= 7) {
-
             // Bass starts 
-            grainbass.start()
 
             // TODO initiate LED circle of death and flashing 
 
             // Todo intiate Servo 'waking up'
+            delay1.feedback.value = 1
+            // dist.Distorion.value = 0.8
+            reverb.roomSize.value = .9
+            if (smoothedYValue <= 5) {
+                grainbass.start();
 
-           if (smoothedYValue <= 4) {
 
-              // TODO 
-              // Final Crazy LED Sequence going
+                // TODO 
+                // Final Crazy LED Sequence going
 
-               // TODO 
-              // Initiate Balloon rising into the air
+                // TODO 
+                // Initiate Balloon rising into the air
+
+
 
                 if (smoothedYValue <= 3) {
 
-              // TODO 
-              // Play voice recording of the dead 
+                    // TODO 
+                    // Play voice recording of the dead 
 
+                }
+            }
 
-
-        } else {
-            grainbass.stop();
         }
 
-
-
-
-
+    } else {
+        grainbass.stop();
     }
+
+
 
 }
