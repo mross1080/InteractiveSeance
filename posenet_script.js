@@ -7,6 +7,8 @@ let video;
 let poseNet;
 let poses = [];
 let keypoints = {}
+var serial; // variable to hold an instance of the serialport library
+var fromSerial = 0; //variable to hold the data
 
 
 function setup() {
@@ -23,8 +25,16 @@ function setup() {
     });
     // Hide the video element, and just show the canvas
     video.hide();
-}
+  serial = new p5.SerialPort(); // make a new instance of  serialport librar
+  // serial.on('list', printList); // callback function for serialport list event
+  serial.on('data', serialEvent); // callback for new data coming in
+  serial.list(); // list the serial ports
+  serial.open("/dev/cu.usbmodem1431"); // open a port
 
+}
+function serialEvent() {
+  // this is called when data is recieved
+}
 function modelReady() {
     select('#status').html('Model Loaded');
 }
@@ -100,7 +110,7 @@ var grainbass = new Tone.GrainPlayer({
     "playbackRate": 4
 }).toMaster();
 
-grainplayer.start()
+// grainplayer.start()
 grainplayer.volume.value = -10;
 // grainbass.volume.value = -5;
 Tone.Transport.start();
@@ -131,24 +141,19 @@ var smoothedXValue = 0;
 var maxYValue = 0;
 var minYValue = 10;
 var smoothedYValue = 0;
-
-
-
 var leftShoulder = 0;
 
 function playChord() {
-
-
-    // TODO 
-    // Write Default LED State 
-    console.log(poses)
+    // TODO
+    // Write Default LED State
+  console.log(poses);
+  console.log(12);
+  //Handshake : Light up LED on DI 12
+  serial.write(12);
     if (poses.length > 0) {
         // if poses.length > 0 then we have at least one person on the screen, begin feedback sequences
-
-
-        // TODO 
-        // Write Phase 1 of LED Feedback now that we are tracking bodies 
-
+        // TODO
+        // Write Phase 1 of LED Feedback now that we are tracking bodies
 
         var me = poses[0]
         console.log("MY DATA : ")
@@ -164,8 +169,8 @@ function playChord() {
 
 
 
-        // TODO : Possibly Refactor this ? 
-        // Smooth X values 
+        // TODO : Possibly Refactor this ?
+        // Smooth X values
         if (smoothedXValue == 0) {
             smoothedXValue = mappedXValue;
 
@@ -198,40 +203,34 @@ function playChord() {
         }
 
         document.getElementById("smoothedcamvalue").innerText = "Mapped and Smoothed Left Wrist : x= " + smoothedXValue + " y=" + smoothedYValue;
-
-
-
         // if smoothedYValue is less that 7 initiate next feedback
-        if (smoothedYValue <= 7) {
-            // Bass starts 
-
-            // TODO initiate LED circle of death and flashing 
+      if (smoothedYValue <= 8 && smoothedYValue >= 7) {
+            // Bass starts
+            // TODO initiate LED circle of death and flashing
+          serial.write(1);
 
             // Todo intiate Servo 'waking up'
             delay1.feedback.value = 1
             // dist.Distorion.value = 0.8
             reverb.roomSize.value = .9
-            if (smoothedYValue <= 5) {
-                grainbass.start();
-
-
-                // TODO 
-                // Final Crazy LED Sequence going
-
-                // TODO 
-                // Initiate Balloon rising into the air
-
-
-
-                if (smoothedYValue <= 3) {
-
-                    // TODO 
-                    // Play voice recording of the dead 
-
-                }
-            }
 
         }
+      if (smoothedYValue <= 7 && smoothedYValue >= 6) {
+         serial.write(2);
+              // grainbass.start();
+                // TODO
+                // Final Crazy LED Sequence going
+
+                // TODO
+                // Initiate Balloon rising into the air
+        }
+       if (smoothedYValue <= 6) {
+          serial.write(3);
+                  // TODO
+                  // Play voice recording of the dead
+      }
+
+
 
     } else {
         grainbass.stop();
@@ -240,3 +239,8 @@ function playChord() {
 
 
 }
+
+
+
+
+
