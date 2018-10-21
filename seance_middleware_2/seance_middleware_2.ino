@@ -11,11 +11,13 @@ FASTLED_USING_NAMESPACE
 #define DATA_PIN    3
 #define SERVO_PIN   5
 //#define CLK_PIN   4
-#define LED_TYPE    NEOPIXEL
+#define LED_TYPE    WS2811
 #define COLOR_ORDER GRB
 #define NUM_LEDS    60
+uint8_t stepRate = 100;
 uint8_t sat = 0;
 int upOrDown = 0;
+byte intFromSerial; //define empty byte for state setting later
 CRGB leds[NUM_LEDS];
 
 #define BRIGHTNESS          96
@@ -37,7 +39,7 @@ void setup() {
 }
 
 void loop() {
-    EVERY_N_MILLISECONDS(100) {
+    EVERY_N_MILLISECONDS(stepRate) {
     if (upOrDown == 0) {
      sat++;
     } else {
@@ -52,35 +54,35 @@ void loop() {
   }
   if (Serial.available()) {
 
-    byte intFromSerial = Serial.read();
+    intFromSerial = Serial.read();
     if(intFromSerial == 12) {
         digitalWrite(12, HIGH);
      }
 
-    
-  // put your main code here, to run repeatedly:
+  }
+   // put your main code here, to run repeatedly:
+   // move this outside of serial.available to prevent delays
   if (intFromSerial == 1) {
    initialState();
+   stepRate = 100;
    myServo.write(60);
-   delay(15);
   }
   
   if (intFromSerial == 2) {
     speedUp();
     myServo.write(120);
-    delay(15);
   }
   if (intFromSerial == 3) {
+    stepRate = 10;
     redRing();
     myServo.write(180);
-    delay(15);
   }
-  }
+    FastLED.show();
 }
 
 void initialState() {
+  Serial.println(sat);
   fill_solid(leds, NUM_LEDS, CHSV(255, 0, sat));
-  FastLED.show();
 }
 void fadeall() { for(int i = 0; i < NUM_LEDS; i++) { leds[i] = CRGB::Black; } }
 
@@ -101,5 +103,4 @@ void speedUp() {
 }
  void redRing() {
     fill_solid(leds, NUM_LEDS, CHSV(255, 255, sat));
-    FastLED.show();
  }
