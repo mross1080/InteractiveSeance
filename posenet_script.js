@@ -69,6 +69,8 @@ function drawKeypoints() {
     }
 }
 
+
+var voice_files = ["bassdrone2.mp3","seanceaudio2.mp3"]
 var skeleton = ""
 var meter = new Tone.Meter();
 Tone.Master.chain(meter);
@@ -110,9 +112,20 @@ var grainbass = new Tone.GrainPlayer({
     "playbackRate": 4
 }).toMaster();
 
-// grainplayer.start()
+var grainvoice = new Tone.GrainPlayer({
+    "url": "https://s3.us-east-2.amazonaws.com/itpcloudassets/seanceaudio3.mp3",
+        "loop": true,
+    "grainSize": 1,
+    "overlap": 0,
+    "reverse": false,
+  
+}).toMaster();
+
+grainplayer.start()
 grainplayer.volume.value = -10;
-// grainbass.volume.value = -5;
+grainvoice.volume.value = 5;
+// grainvoice.start();
+grainbass.volume.value = -15;
 Tone.Transport.start();
 
 
@@ -217,15 +230,17 @@ function playChord() {
         }
       if (smoothedYValue <= 7 && smoothedYValue >= 6) {
          serial.write(2);
-              // grainbass.start();
+              grainbass.start();
                 // TODO
                 // Final Crazy LED Sequence going
 
                 // TODO
                 // Initiate Balloon rising into the air
         }
-       if (smoothedYValue <= 6) {
+       if (smoothedYValue <= 7) {
           serial.write(3);
+          // grainvoice.url = "https://s3.us-east-2.amazonaws.com/itpcloudassets/seanceaudio1.wav"
+         grainvoice.start();
                   // TODO
                   // Play voice recording of the dead
       }
