@@ -7,6 +7,8 @@ let video;
 let poseNet;
 let poses = [];
 let keypoints = {}
+let stage = 0;
+let time = new Date();
 var serial; // variable to hold an instance of the serialport library
 var fromSerial = 0; //variable to hold the data
 
@@ -159,26 +161,22 @@ var leftShoulder = 0;
 function playChord() {
     // TODO
     // Write Default LED State
-  console.log(poses);
-  console.log(12);
   //Handshake : Light up LED on DI 12
   serial.write(12);
+  //set stage in interaction
     if (poses.length > 0) {
+
         // if poses.length > 0 then we have at least one person on the screen, begin feedback sequences
         // TODO
         // Write Phase 1 of LED Feedback now that we are tracking bodies
 
         var me = poses[0]
-        console.log("MY DATA : ")
-        console.log(me)
-        console.log("POSES : ")
-        console.log(me.pose)
 
-        document.getElementById("camvalue").innerText = "Left Wrist : x= " + me.pose.keypoints[9].position.x + " y=" + me.pose.keypoints[9].position.y;
+      //        document.getElementById("camvalue").innerText = "Left Wrist : x= " + me.pose.keypoints[9].position.x + " y=" + me.pose.keypoints[9].position.y;
 
         mappedYValue = Math.floor(map(me.pose.keypoints[9].position.y, 0, 500, 0, 10))
         mappedXValue = Math.floor(map(me.pose.keypoints[9].position.x, 0, 500, 0, 10))
-        document.getElementById("mappedcamvalue").innerText = "Mapped and Smoothed Left Wrist : x= " + mappedXValue + " y=" + mappedYValue;
+      //  document.getElementById("mappedcamvalue").innerText = "Mapped and Smoothed Left Wrist : x= " + mappedXValue + " y=" + mappedYValue;
 
 
 
@@ -215,20 +213,36 @@ function playChord() {
             minYValue = mappedYValue;
         }
 
-        document.getElementById("smoothedcamvalue").innerText = "Mapped and Smoothed Left Wrist : x= " + smoothedXValue + " y=" + smoothedYValue;
+      //        document.getElementById("smoothedcamvalue").innerText = "Mapped and Smoothed Left Wrist : x= " + smoothedXValue + " y=" + smoothedYValue;
         // if smoothedYValue is less that 7 initiate next feedback
-      if (smoothedYValue <= 8 && smoothedYValue >= 7) {
-            // Bass starts
-            // TODO initiate LED circle of death and flashing
-          serial.write(1);
-
+      console.log('y value: ', smoothedYValue)
+      console.log('stage: ', stage);
+      console.log('diff: ', new Date() - time)
+      if (smoothedYValue > 9 && (new Date() - time > 30000))  {
+        stage = 0;
+        time = new Date();
+        document.getElementById("instructions").innerText = "TO COMMUNICATE WITH THE DEAD, APPROACH THE MONITOR AND BEGIN RAISING YOUR ARMS SLOWLY"
+      }
+      if (smoothedYValue <= 5 && stage >= 2 && (new Date() - time > 7000)) {
+        time = new Date();
+        stage = 3;
+         document.getElementById("instructions").innerText = "The spirits have arrived. Say what you will, but beware - they may not like what they hear."
+          serial.write(3);
             // Todo intiate Servo 'waking up'
             delay1.feedback.value = 1
             // dist.Distorion.value = 0.8
             reverb.roomSize.value = .9
+        //         setTimeout(() => {
+        //           stage = 0;
+        //         }, 10000)
+        //                  // TODO
+                  // Play voice recording of the dead
+      }
 
-        }
-      if (smoothedYValue <= 7 && smoothedYValue >= 6) {
+      if (smoothedYValue <= 7 && smoothedYValue >= 5 && stage >= 1 && stage <= 2 && (new Date() - time > 7000)) {
+        time = new Date();
+        stage = 2;
+        document.getElementById("instructions").innerText = "The spirits are approaching the mortal realm. Continue raising your arms. Do not anger the spirits!"
          serial.write(2);
               grainbass.start();
                 // TODO
@@ -237,19 +251,25 @@ function playChord() {
                 // TODO
                 // Initiate Balloon rising into the air
         }
-       if (smoothedYValue <= 7) {
-          serial.write(3);
-          // grainvoice.url = "https://s3.us-east-2.amazonaws.com/itpcloudassets/seanceaudio1.wav"
-         grainvoice.start();
-                  // TODO
-                  // Play voice recording of the dead
-      }
 
 
+      if (smoothedYValue <= 9 && smoothedYValue >= 7 && stage <= 1 && (new Date() - time > 7000)) {
+          time = new Date();
+           document.getElementById("instructions").innerText = "The dead have heard your call. Continue raising your arms."
+            // Bass starts
+            // TODO initiate LED circle of death and flashing
+          serial.write(1);
+          stage = 1;
+           grainvoice.start();
 
+
+        }
     } else {
         grainbass.stop();
     }
+  setTimeout(() => {
+    stage = 0;
+  }, 600000)
 
 
 
