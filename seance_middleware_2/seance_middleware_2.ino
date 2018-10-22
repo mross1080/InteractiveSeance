@@ -13,7 +13,7 @@ FASTLED_USING_NAMESPACE
 //#define CLK_PIN   4
 #define LED_TYPE    WS2811
 #define COLOR_ORDER GRB
-#define NUM_LEDS    60
+#define NUM_LEDS    30
 uint8_t stepRate = 100;
 uint8_t sat = 0;
 int upOrDown = 0;
@@ -26,6 +26,7 @@ CRGB leds[NUM_LEDS];
 void setup() {
   Serial.begin(9600);
   myServo.attach(SERVO_PIN);
+  myServo.write(0);
   // put your setup code here, to run once:
   // delay(3000); // 3 second delay for recovery
   
