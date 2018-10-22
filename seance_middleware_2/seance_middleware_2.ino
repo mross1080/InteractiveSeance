@@ -10,10 +10,9 @@ FASTLED_USING_NAMESPACE
 
 #define DATA_PIN    3
 #define SERVO_PIN   5
-//#define CLK_PIN   4
 #define LED_TYPE    WS2811
 #define COLOR_ORDER GRB
-#define NUM_LEDS    30
+#define NUM_LEDS    50
 uint8_t stepRate = 100;
 uint8_t sat = 0;
 int upOrDown = 0;
@@ -115,12 +114,8 @@ void speedUp() {
   
 }
  void redRing() {
-//    fill_solid(leds, NUM_LEDS, CHSV(255, 255, sat));
       fadeToBlackBy( leds, NUM_LEDS, 10);
   int pos = random16(NUM_LEDS);
   leds[pos] += CHSV( 255, 200, 255);
 
-    
-//    delay(100);
-//    fill_solid(leds, NUM_LEDS, CHSV(0, 0, 0));
  }
