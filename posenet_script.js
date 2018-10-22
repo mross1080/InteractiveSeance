@@ -115,7 +115,7 @@ var grainbass = new Tone.GrainPlayer({
 }).toMaster();
 
 var grainvoice = new Tone.GrainPlayer({
-    "url": "https://s3.us-east-2.amazonaws.com/itpcloudassets/seanceaudio3.mp3",
+    "url": "https://s3.us-east-2.amazonaws.com/itpcloudassets/seanceaudio1.wav",
         "loop": true,
     "grainSize": 1,
     "overlap": 0,
@@ -228,10 +228,9 @@ function playChord() {
         stage = 3;
          document.getElementById("instructions").innerText = "The spirits have arrived. Say what you will, but beware - they may not like what they hear."
           serial.write(3);
+          grainvoice.start();
             // Todo intiate Servo 'waking up'
-            delay1.feedback.value = 1
-            // dist.Distorion.value = 0.8
-            reverb.roomSize.value = .9
+     
         //         setTimeout(() => {
         //           stage = 0;
         //         }, 10000)
@@ -260,7 +259,9 @@ function playChord() {
             // TODO initiate LED circle of death and flashing
           serial.write(1);
           stage = 1;
-           grainvoice.start();
+                  delay1.feedback.value = 1
+            // dist.Distorion.value = 0.8
+            reverb.roomSize.value = .9
 
 
         }

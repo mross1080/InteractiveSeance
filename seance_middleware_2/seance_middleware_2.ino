@@ -18,14 +18,16 @@ uint8_t sat = 0;
 int upOrDown = 0;
 byte intFromSerial; //define empty byte for state setting later
 CRGB leds[NUM_LEDS];
-
+boolean started_interaction = false;
 #define BRIGHTNESS          96
 // is this useful? #define FRAMES_PER_SECOND  120
+uint8_t gHue = 0; // rotating "base color" used by many of the patterns
 
 void setup() {
   Serial.begin(9600);
   myServo.attach(SERVO_PIN);
   myServo.write(90);
+  delay(500);
   // put your setup code here, to run once:
   // delay(3000); // 3 second delay for recovery
   
@@ -52,6 +54,13 @@ void loop() {
   if (sat == 0) {
     upOrDown = 0;
   }
+
+   EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
+
+  if (!started_interaction) {
+      initialState();  
+    }
+  
   if (Serial.available()) {
 
     intFromSerial = Serial.read();
@@ -63,24 +72,47 @@ void loop() {
    // put your main code here, to run repeatedly:
    // move this outside of serial.available to prevent delays
   if (intFromSerial == 1) {
-   initialState();
+    started_interaction = true;
+   stageOneLights();
    stepRate = 100;
-   myServo.write(60);
+   for (int i = 90; i >= 60; i--) {
+      myServo.write(i);
+      delay(15);
+   }
+   delay(500);
   }
   
   if (intFromSerial == 2) {
     speedUp();
-    myServo.write(30);
+    for (int i = 60; i >= 30; i--) {
+      myServo.write(i);
+      delay(15);
+   }
+   delay(500);
   }
   if (intFromSerial == 3) {
     stepRate = 10;
     redRing();
-    myServo.write(0);
+    for (int i = 30; i >= 0; i--) {
+      myServo.write(i);
+      delay(15);
+   }
+   delay(500);
   }
     FastLED.show();
 }
 
-void initialState() {
+
+void initialState()
+{
+  // a colored dot sweeping back and forth, with fading trails
+  fadeToBlackBy( leds, NUM_LEDS, 20);
+  int pos = beatsin16( 13, 0, NUM_LEDS-1 );
+  leds[pos] += CHSV( 0, 0, gHue);
+}
+  
+
+void stageOneLights() {
   Serial.println(sat);
   fill_solid(leds, NUM_LEDS, CHSV(255, 0, sat));
 }
