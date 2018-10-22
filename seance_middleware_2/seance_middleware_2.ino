@@ -36,6 +36,8 @@ void setup() {
 
   // set master brightness control
   FastLED.setBrightness(BRIGHTNESS);
+      fill_solid(leds, NUM_LEDS, CHSV(10, 10, sat));
+
 
 }
 
@@ -53,9 +55,11 @@ void loop() {
   if (sat == 0) {
     upOrDown = 0;
   }
+  default_lights();
   if (Serial.available()) {
 
     intFromSerial = Serial.read();
+
     if(intFromSerial == 12) {
         digitalWrite(12, HIGH);
      }
@@ -81,6 +85,14 @@ void loop() {
     FastLED.show();
 }
 
+void default_lights() {
+          fadeToBlackBy( leds, NUM_LEDS, 20);
+
+  int pos = beatsin16( 13, 0, NUM_LEDS-1 );
+       leds[pos] += CHSV( 100, 100, 100);
+  
+  }
+
 void initialState() {
   Serial.println(sat);
   fill_solid(leds, NUM_LEDS, CHSV(255, 0, sat));
@@ -103,5 +115,12 @@ void speedUp() {
   
 }
  void redRing() {
-    fill_solid(leds, NUM_LEDS, CHSV(255, 255, sat));
+//    fill_solid(leds, NUM_LEDS, CHSV(255, 255, sat));
+      fadeToBlackBy( leds, NUM_LEDS, 10);
+  int pos = random16(NUM_LEDS);
+  leds[pos] += CHSV( 255, 200, 255);
+
+    
+//    delay(100);
+//    fill_solid(leds, NUM_LEDS, CHSV(0, 0, 0));
  }
