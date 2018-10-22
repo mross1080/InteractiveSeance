@@ -25,7 +25,7 @@ CRGB leds[NUM_LEDS];
 void setup() {
   Serial.begin(9600);
   myServo.attach(SERVO_PIN);
-  myServo.write(0);
+  myServo.write(90);
   // put your setup code here, to run once:
   // delay(3000); // 3 second delay for recovery
   
@@ -35,8 +35,6 @@ void setup() {
 
   // set master brightness control
   FastLED.setBrightness(BRIGHTNESS);
-      fill_solid(leds, NUM_LEDS, CHSV(10, 10, sat));
-
 
 }
 
@@ -54,11 +52,9 @@ void loop() {
   if (sat == 0) {
     upOrDown = 0;
   }
-  default_lights();
   if (Serial.available()) {
 
     intFromSerial = Serial.read();
-
     if(intFromSerial == 12) {
         digitalWrite(12, HIGH);
      }
@@ -74,23 +70,15 @@ void loop() {
   
   if (intFromSerial == 2) {
     speedUp();
-    myServo.write(120);
+    myServo.write(30);
   }
   if (intFromSerial == 3) {
     stepRate = 10;
     redRing();
-    myServo.write(180);
+    myServo.write(0);
   }
     FastLED.show();
 }
-
-void default_lights() {
-          fadeToBlackBy( leds, NUM_LEDS, 20);
-
-  int pos = beatsin16( 13, 0, NUM_LEDS-1 );
-       leds[pos] += CHSV( 100, 100, 100);
-  
-  }
 
 void initialState() {
   Serial.println(sat);
@@ -117,5 +105,4 @@ void speedUp() {
       fadeToBlackBy( leds, NUM_LEDS, 10);
   int pos = random16(NUM_LEDS);
   leds[pos] += CHSV( 255, 200, 255);
-
  }

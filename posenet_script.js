@@ -120,7 +120,7 @@ var grainvoice = new Tone.GrainPlayer({
     "grainSize": 1,
     "overlap": 0,
     "reverse": false,
-  
+
 }).toMaster();
 
 grainplayer.start()
