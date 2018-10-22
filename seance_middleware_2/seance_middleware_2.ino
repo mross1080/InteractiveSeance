@@ -19,16 +19,16 @@ int upOrDown = 0;
 byte intFromSerial; //define empty byte for state setting later
 CRGB leds[NUM_LEDS];
 boolean started_interaction = false;
+int pos = 60;
 #define BRIGHTNESS          96
 // is this useful? #define FRAMES_PER_SECOND  120
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
-int pos = 120;
 
 void setup() {
   Serial.begin(9600);
   myServo.attach(SERVO_PIN);
   myServo.write(pos);
-  delay(1000);
+  delay(3000);
   // put your setup code here, to run once:
   // delay(3000); // 3 second delay for recovery
   
@@ -65,8 +65,8 @@ void loop() {
   if (Serial.available()) {
 
     intFromSerial = Serial.read();
-    if(intFromSerial == 12) {
-        digitalWrite(12, HIGH);
+    if(intFromSerial == 0) {
+        initialState();
      }
 
   }
@@ -76,35 +76,50 @@ void loop() {
    started_interaction = true;
    stageOneLights();
    stepRate = 100;
-   for (pos = 90; pos >= 60; pos-=1) {
+   int myDelay = random(1, 3);
+   for (pos = 90; pos <= 110; pos+=1) {
       myServo.write(pos);
-      delay(15);
+      delay(myDelay * 15);
    }
-   delay(500);
+    for (pos = 110; pos >= 90; pos-=1) {
+      myServo.write(pos);
+      delay(myDelay * 15);
+   }
   }
   
   if (intFromSerial == 2) {
     speedUp();
-    for (pos = 60; pos >= 30; pos-=1) {
+    int myDelay = random(1,5);
+    if (myDelay > 3) {
+      myServo.write(45);
+   } else {
+    for (pos = 80; pos <= 120; pos+=10) {
       myServo.write(pos);
-      delay(15);
+      delay(myDelay*5);
    }
-   delay(500);
+    for (pos = 120; pos >= 80; pos-=10) {
+      myServo.write(pos);
+      delay(myDelay*5);
+   }
+   }
   }
   if (intFromSerial == 3) {
     stepRate = 10;
     redRing();
-    for (pos = 30; pos >= 0; pos-=1) {
+    for (pos = 10; pos >= 0; pos-=1) {
       myServo.write(pos);
       delay(15);
    }
-  for (pos = 0; pos >= 30; pos += 1) { 
-    myServo.write(pos);              // tell servo to go to position in variable 'pos'
-    delay(15);                       // waits 15ms for the servo to reach the position
+    for (pos = 0; pos >= 10; pos+=1) {
+      myServo.write(pos);
+      delay(15);
+   }
+
   }
-   delay(500);
-  }
+  Serial.println(intFromSerial);
     FastLED.show();
+    myServo.write(pos);
+    delay(15);
 }
 
 
@@ -112,8 +127,9 @@ void initialState()
 {
   // a colored dot sweeping back and forth, with fading trails
   fadeToBlackBy( leds, NUM_LEDS, 20);
-  int pos = beatsin16( 13, 0, NUM_LEDS-1 );
-  leds[pos] += CHSV( 0, 0, gHue);
+  int ledPos = beatsin16( 13, 0, NUM_LEDS-1 );
+  leds[ledPos] += CHSV( 0, 0, gHue);
+  pos = 90;
 }
   
 
@@ -139,7 +155,7 @@ void speedUp() {
   
 }
  void redRing() {
-      fadeToBlackBy( leds, NUM_LEDS, 10);
+  fadeToBlackBy( leds, NUM_LEDS, 10);
   int pos = random16(NUM_LEDS);
   leds[pos] += CHSV( 255, 200, 255);
  }

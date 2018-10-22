@@ -161,8 +161,6 @@ var leftShoulder = 0;
 function playChord() {
     // TODO
     // Write Default LED State
-  //Handshake : Light up LED on DI 12
-  serial.write(12);
   //set stage in interaction
     if (poses.length > 0) {
 
@@ -218,10 +216,11 @@ function playChord() {
       console.log('y value: ', smoothedYValue)
       console.log('stage: ', stage);
       console.log('diff: ', new Date() - time)
-      if (smoothedYValue > 9 && (new Date() - time > 30000))  {
+      if (smoothedYValue > 8.5 && (new Date() - time > 30000))  {
         stage = 0;
         time = new Date();
-        document.getElementById("instructions").innerText = "TO COMMUNICATE WITH THE DEAD, APPROACH THE MONITOR AND BEGIN RAISING YOUR ARMS SLOWLY"
+        document.getElementById("instructions").innerText = "TO COMMUNICATE WITH THE DEAD, APPROACH THE MONITOR AND BEGIN RAISING YOUR ARMS SLOWLY";
+        serial.write(0)
       }
       if (smoothedYValue <= 5 && stage >= 2 && (new Date() - time > 7000)) {
         time = new Date();
@@ -247,7 +246,7 @@ function playChord() {
         }
 
 
-      if (smoothedYValue <= 9 && smoothedYValue >= 7 && stage <= 1 && (new Date() - time > 7000)) {
+      if (smoothedYValue <= 8.5 && smoothedYValue >= 7 && stage <= 1 && (new Date() - time > 7000)) {
           time = new Date();
            document.getElementById("instructions").innerText = "The dead have heard your call. Continue raising your arms."
             // Bass starts
@@ -262,9 +261,6 @@ function playChord() {
     } else {
         grainbass.stop();
     }
-  setTimeout(() => {
-    stage = 0;
-  }, 600000)
 
 
 
