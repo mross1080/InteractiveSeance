@@ -22,12 +22,13 @@ boolean started_interaction = false;
 #define BRIGHTNESS          96
 // is this useful? #define FRAMES_PER_SECOND  120
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
+int pos = 120;
 
 void setup() {
   Serial.begin(9600);
   myServo.attach(SERVO_PIN);
-  myServo.write(90);
-  delay(500);
+  myServo.write(pos);
+  delay(1000);
   // put your setup code here, to run once:
   // delay(3000); // 3 second delay for recovery
   
@@ -72,11 +73,11 @@ void loop() {
    // put your main code here, to run repeatedly:
    // move this outside of serial.available to prevent delays
   if (intFromSerial == 1) {
-    started_interaction = true;
+   started_interaction = true;
    stageOneLights();
    stepRate = 100;
-   for (int i = 90; i >= 60; i--) {
-      myServo.write(i);
+   for (pos = 90; pos >= 60; pos-=1) {
+      myServo.write(pos);
       delay(15);
    }
    delay(500);
@@ -84,8 +85,8 @@ void loop() {
   
   if (intFromSerial == 2) {
     speedUp();
-    for (int i = 60; i >= 30; i--) {
-      myServo.write(i);
+    for (pos = 60; pos >= 30; pos-=1) {
+      myServo.write(pos);
       delay(15);
    }
    delay(500);
@@ -93,10 +94,14 @@ void loop() {
   if (intFromSerial == 3) {
     stepRate = 10;
     redRing();
-    for (int i = 30; i >= 0; i--) {
-      myServo.write(i);
+    for (pos = 30; pos >= 0; pos-=1) {
+      myServo.write(pos);
       delay(15);
    }
+  for (pos = 0; pos >= 30; pos += 1) { 
+    myServo.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(15);                       // waits 15ms for the servo to reach the position
+  }
    delay(500);
   }
     FastLED.show();

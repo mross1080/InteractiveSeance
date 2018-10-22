@@ -230,7 +230,7 @@ function playChord() {
           serial.write(3);
           grainvoice.start();
             // Todo intiate Servo 'waking up'
-     
+
         //         setTimeout(() => {
         //           stage = 0;
         //         }, 10000)
@@ -243,12 +243,7 @@ function playChord() {
         stage = 2;
         document.getElementById("instructions").innerText = "The spirits are approaching the mortal realm. Continue raising your arms. Do not anger the spirits!"
          serial.write(2);
-              grainbass.start();
-                // TODO
-                // Final Crazy LED Sequence going
-
-                // TODO
-                // Initiate Balloon rising into the air
+        grainbass.start();
         }
 
 
@@ -256,12 +251,11 @@ function playChord() {
           time = new Date();
            document.getElementById("instructions").innerText = "The dead have heard your call. Continue raising your arms."
             // Bass starts
-            // TODO initiate LED circle of death and flashing
           serial.write(1);
           stage = 1;
-                  delay1.feedback.value = 1
+          delay1.feedback.value = 1
             // dist.Distorion.value = 0.8
-            reverb.roomSize.value = .9
+        reverb.roomSize.value = .9
 
 
         }
