@@ -140,7 +140,7 @@ undeadvoice.volume.value = 10;
 // grainvoice.start();
 grainbass.volume.value = -10;
 Tone.Transport.start();
-  
+
 
 
 // A function to draw the skeletons
@@ -243,25 +243,24 @@ function playChord() {
       if (smoothedXValue <= 8.7 && stage == 3 && (new Date() - time > 7000)) {
         time = new Date();
         stage = 4;
-         document.getElementById("instructions").innerText = "Your spirit has arrived, be careful what you wish for"
+         document.getElementById("instructions").innerText = "You may now speak to the spirit. Beware - it may not like what it hears."
           serial.write(4);
           grainvoice.mute = true;
           grainbass.mute = true;
           grainplayer.mute = true;
 
           delay1.feedback.value = 0
-        reverb.roomSize.value = 0
+          reverb.roomSize.value = 0
 
-                    setTimeout(() => {
-                            undeadvoice.start();
-
+                setTimeout(() => {
+                  undeadvoice.start();
                  }, 3000)
             // Todo intiate Servo 'waking up'
 
-        //         setTimeout(() => {
-        //           stage = 0;
-        //         }, 10000)
-        //                  // TODO
+                 setTimeout(() => {
+                   stage = 0;
+                 }, 60000)
+                          // TODO
                   // Play voice recording of the dead
       }
 
@@ -269,7 +268,7 @@ function playChord() {
       if (smoothedYValue <= 5 && stage == 2 && (new Date() - time > 7000)) {
         time = new Date();
         stage = 3;
-         document.getElementById("instructions").innerText = "The spirits have arrived. Now place your left hand over your heart to project your soul into the beyond"
+         document.getElementById("instructions").innerText = "The spirits have arrived. Now place your left hand over your heart to open your soul to the one you seek."
           serial.write(3);
           grainvoice.start();
           grainbass.volume.value = -20;
