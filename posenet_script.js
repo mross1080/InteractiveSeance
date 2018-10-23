@@ -239,9 +239,6 @@ function playChord() {
       }
 
 
-
-      // 
-
       let xCoordinateDiff = laggingXValue - smoothedXValue;
       console.log("x coordinate diff : " + xCoordinateDiff) 
          // Initiate Stage 3
@@ -255,19 +252,17 @@ function playChord() {
           grainplayer.mute = true;
 
           delay1.feedback.value = 0
-        reverb.roomSize.value = 0
+          reverb.roomSize.value = 0
 
-                    setTimeout(() => {
-                            undeadvoice.start();
+          setTimeout(() => {
+            undeadvoice.start();
+          }, 3000)
 
-                 }, 3000)
-            // Todo intiate Servo 'waking up'
+          setTimeout(() => {
+            serial.write(5)
+            console.log("WRITING LAST STAGE")
+          }, 40000)
 
-        //         setTimeout(() => {
-        //           stage = 0;
-        //         }, 10000)
-        //                  // TODO
-                  // Play voice recording of the dead
       }
 
       // Initiate Stage 3
@@ -279,13 +274,6 @@ function playChord() {
           grainvoice.start();
           grainbass.volume.value = -20;
 
-            // Todo intiate Servo 'waking up'
-
-        //         setTimeout(() => {
-        //           stage = 0;
-        //         }, 10000)
-        //                  // TODO
-                  // Play voice recording of the dead
       }
       // Initiate Stage 2
       if (smoothedYValue <= 7 && smoothedYValue >= 5.5 && stage == 1 && (new Date() - time > 7000)) {
