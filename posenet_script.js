@@ -94,7 +94,6 @@ var dist = new Tone.Distortion(0).toMaster();
 var meter = new Tone.Meter();
 Tone.Master.chain(meter);
 
-
 var grainplayer = new Tone.GrainPlayer({
     "url": "https://s3.us-east-2.amazonaws.com/itpcloudassets/chants.wav",
     "loop": true,
@@ -123,13 +122,25 @@ var grainvoice = new Tone.GrainPlayer({
 
 }).toMaster();
 
+
+var undeadvoice = new Tone.GrainPlayer({
+    "url": "https://s3.us-east-2.amazonaws.com/itpcloudassets/seanceaudiodead.mp3",
+        "loop": false,
+    "grainSize": 1,
+    "overlap": 0,
+    "reverse": false,
+
+}).toMaster();
+
 grainplayer.start()
 grainplayer.volume.value = -10;
 grainvoice.volume.value = 5;
-// grainvoice.start();
-grainbass.volume.value = -15;
-Tone.Transport.start();
+undeadvoice.volume.value = 10;
 
+// grainvoice.start();
+grainbass.volume.value = -10;
+Tone.Transport.start();
+  
 
 
 // A function to draw the skeletons
@@ -179,7 +190,6 @@ function playChord() {
       //  document.getElementById("mappedcamvalue").innerText = "Mapped and Smoothed Left Wrist : x= " + mappedXValue + " y=" + mappedYValue;
 
 
-
         // TODO : Possibly Refactor this ?
         // Smooth X values
         if (smoothedXValue == 0) {
@@ -216,6 +226,7 @@ function playChord() {
       //        document.getElementById("smoothedcamvalue").innerText = "Mapped and Smoothed Left Wrist : x= " + smoothedXValue + " y=" + smoothedYValue;
         // if smoothedYValue is less that 7 initiate next feedback
       console.log('y value: ', smoothedYValue)
+      console.log('x value: ', smoothedXValue)
       console.log('stage: ', stage);
       console.log('diff: ', new Date() - time)
       if (smoothedYValue > 9 && (new Date() - time > 30000))  {
@@ -223,12 +234,25 @@ function playChord() {
         time = new Date();
         document.getElementById("instructions").innerText = "TO COMMUNICATE WITH THE DEAD, APPROACH THE MONITOR AND BEGIN RAISING YOUR ARMS SLOWLY"
       }
-      if (smoothedYValue <= 5 && stage >= 2 && (new Date() - time > 7000)) {
+
+
+      //     // Initiate Stage 3
+      if (smoothedXValue <= 8 && stage == 3 && (new Date() - time > 7000)) {
         time = new Date();
-        stage = 3;
-         document.getElementById("instructions").innerText = "The spirits have arrived. Say what you will, but beware - they may not like what they hear."
-          serial.write(3);
-          grainvoice.start();
+        stage = 4;
+         document.getElementById("instructions").innerText = "Your spirit has arrived, be careful what you wish for"
+          serial.write(4);
+          grainvoice.mute = true;
+          grainbass.mute = true;
+          grainplayer.mute = true;
+
+          delay1.feedback.value = 0
+        reverb.roomSize.value = 0
+
+                    setTimeout(() => {
+                            undeadvoice.start();
+
+                 }, 3000)
             // Todo intiate Servo 'waking up'
 
         //         setTimeout(() => {
@@ -238,7 +262,24 @@ function playChord() {
                   // Play voice recording of the dead
       }
 
-      if (smoothedYValue <= 7 && smoothedYValue >= 5 && stage >= 1 && stage <= 2 && (new Date() - time > 7000)) {
+      // Initiate Stage 3
+      if (smoothedYValue <= 5 && stage == 2 && (new Date() - time > 7000)) {
+        time = new Date();
+        stage = 3;
+         document.getElementById("instructions").innerText = "The spirits have arrived. Now place your left hand over your heart to project your soul into the beyond"
+          serial.write(3);
+          grainvoice.start();
+          grainbass.volume.value = -20;
+            // Todo intiate Servo 'waking up'
+
+        //         setTimeout(() => {
+        //           stage = 0;
+        //         }, 10000)
+        //                  // TODO
+                  // Play voice recording of the dead
+      }
+      // Initiate Stage 2
+      if (smoothedYValue <= 7 && smoothedYValue >= 5.5 && stage == 1 && (new Date() - time > 7000)) {
         time = new Date();
         stage = 2;
         document.getElementById("instructions").innerText = "The spirits are approaching the mortal realm. Continue raising your arms. Do not anger the spirits!"
@@ -246,15 +287,15 @@ function playChord() {
         grainbass.start();
         }
 
-
-      if (smoothedYValue <= 9 && smoothedYValue >= 7 && stage <= 1 && (new Date() - time > 7000)) {
+        // Initiate Stage 1
+      if (smoothedYValue <= 9 && smoothedYValue >= 7 && stage == 0 && (new Date() - time > 7000)) {
           time = new Date();
-           document.getElementById("instructions").innerText = "The dead have heard your call. Continue raising your arms."
+           document.getElementById("instructions").innerText = "The dead have heard your call. Continue raising your arms. "
             // Bass starts
           serial.write(1);
           stage = 1;
+
           delay1.feedback.value = 1
-            // dist.Distorion.value = 0.8
         reverb.roomSize.value = .9
 
 
