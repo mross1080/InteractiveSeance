@@ -134,7 +134,7 @@ var undeadvoice = new Tone.GrainPlayer({
 
 grainplayer.start()
 grainplayer.volume.value = -10;
-grainvoice.volume.value = 5;
+grainvoice.volume.value = 12;
 undeadvoice.volume.value = 10;
 
 // grainvoice.start();
@@ -168,6 +168,7 @@ var maxYValue = 0;
 var minYValue = 10;
 var smoothedYValue = 0;
 var leftShoulder = 0;
+var seance_in_progress = false;
 
 function playChord() {
     // TODO
@@ -227,16 +228,19 @@ function playChord() {
       console.log('x value: ', smoothedXValue)
       console.log('stage: ', stage);
       console.log('diff: ', new Date() - time)
-      if (smoothedYValue > 8.5 && (new Date() - time > 30000))  {
+      console.log(seance_in_progress)
+      if (smoothedYValue > 8.5 && !seance_in_progress && (new Date() - time > 30000))  {
         stage = 0;
         time = new Date();
         document.getElementById("instructions").innerText = "TO COMMUNICATE WITH THE DEAD, APPROACH THE MONITOR AND BEGIN RAISING YOUR ARMS SLOWLY";
         serial.write(0)
+        seance_in_progress = true;
       }
 
 
+
       //     // Initiate Stage 3
-      if (smoothedXValue <= 8 && stage == 3 && (new Date() - time > 7000)) {
+      if (smoothedXValue <= 8.7 && stage == 3 && (new Date() - time > 7000)) {
         time = new Date();
         stage = 4;
          document.getElementById("instructions").innerText = "Your spirit has arrived, be careful what you wish for"
@@ -296,6 +300,8 @@ function playChord() {
 
           delay1.feedback.value = 1
         reverb.roomSize.value = .9
+                seance_in_progress = true;
+
 
 
         }
