@@ -169,6 +169,7 @@ var minYValue = 10;
 var smoothedYValue = 0;
 var leftShoulder = 0;
 var seance_in_progress = false;
+var laggingXValue = 10;
 
 function playChord() {
     // TODO
@@ -226,9 +227,9 @@ function playChord() {
         // if smoothedYValue is less that 7 initiate next feedback
       console.log('y value: ', smoothedYValue)
       console.log('x value: ', smoothedXValue)
+      console.log('lagging x value: ', laggingXValue)
       console.log('stage: ', stage);
-      console.log('diff: ', new Date() - time)
-      console.log(seance_in_progress)
+      console.log('Time diff: ', new Date() - time)
       if (smoothedYValue > 8.5 && !seance_in_progress && (new Date() - time > 30000))  {
         stage = 0;
         time = new Date();
@@ -239,8 +240,12 @@ function playChord() {
 
 
 
-      //     // Initiate Stage 3
-      if (smoothedXValue <= 8.7 && stage == 3 && (new Date() - time > 7000)) {
+      // 
+
+      let xCoordinateDiff = laggingXValue - smoothedXValue;
+      console.log("x coordinate diff : " + xCoordinateDiff) 
+         // Initiate Stage 3
+      if (xCoordinateDiff > 0.4 && stage == 3 && (new Date() - time > 7000)) {
         time = new Date();
         stage = 4;
          document.getElementById("instructions").innerText = "Your spirit has arrived, be careful what you wish for"
@@ -273,6 +278,7 @@ function playChord() {
           serial.write(3);
           grainvoice.start();
           grainbass.volume.value = -20;
+
             // Todo intiate Servo 'waking up'
 
         //         setTimeout(() => {
@@ -288,6 +294,7 @@ function playChord() {
         document.getElementById("instructions").innerText = "The spirits are approaching the mortal realm. Continue raising your arms. Do not anger the spirits!"
          serial.write(2);
         grainbass.start();
+        laggingXValue = smoothedXValue;
         }
 
         // Initiate Stage 1
