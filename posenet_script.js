@@ -135,11 +135,16 @@ var undeadvoice = new Tone.GrainPlayer({
 grainplayer.start()
 grainplayer.volume.value = -10;
 grainvoice.volume.value = 12;
-undeadvoice.volume.value = 10;
+undeadvoice.volume.value = 15;
 
 // grainvoice.start();
-grainbass.volume.value = -10;
-Tone.Transport.start();
+grainbass.volume.value = -7;
+
+  setTimeout(() => {
+                      Tone.Transport.start();
+
+
+                    }, 10000)
 
 
 
@@ -169,6 +174,7 @@ var minYValue = 10;
 var smoothedYValue = 0;
 var leftShoulder = 0;
 var seance_in_progress = false;
+var laggingXValue = 10;
 
 function playChord() {
     // TODO
@@ -226,73 +232,86 @@ function playChord() {
         // if smoothedYValue is less that 7 initiate next feedback
       console.log('y value: ', smoothedYValue)
       console.log('x value: ', smoothedXValue)
+      console.log('lagging x value: ', laggingXValue)
       console.log('stage: ', stage);
-      console.log('diff: ', new Date() - time)
-      console.log(seance_in_progress)
-      if (smoothedYValue > 8.5 && !seance_in_progress && (new Date() - time > 30000))  {
+      console.log('Time diff: ', new Date() - time)
+      if (smoothedYValue > 8 && !seance_in_progress && (new Date() - time > 30000))  {
         stage = 0;
         time = new Date();
-        document.getElementById("instructions").innerText = "TO COMMUNICATE WITH THE DEAD, APPROACH THE MONITOR AND BEGIN RAISING YOUR ARMS SLOWLY";
+        document.getElementById("instructions").innerText = "TO COMMUNICATE WITH THE DEAD, SIT WITH YOUR FEET IN POSITION ON THE FLOOR AND BEGIN RAISING YOUR ARMS SLOWLY ABOVE YOUR HEAD";
         serial.write(0)
-        seance_in_progress = true;
+        
+
+
       }
 
-
-
-      //     // Initiate Stage 3
-      if (smoothedXValue <= 8.7 && stage == 3 && (new Date() - time > 7000)) {
+     
+      let xCoordinateDiff = laggingXValue - smoothedXValue;
+      console.log("x coordinate diff : " + Math.abs(xCoordinateDiff))
+         // Initiate Stage 3
+      if (Math.abs(xCoordinateDiff) > 0.2 && stage == 3 && (new Date() - time > 13000)) {
         time = new Date();
         stage = 4;
          document.getElementById("instructions").innerText = "You may now speak to the spirit. Beware - it may not like what it hears."
           serial.write(4);
           grainvoice.mute = true;
           grainbass.mute = true;
+          grainbass.stop();
           grainplayer.mute = true;
 
           delay1.feedback.value = 0
           reverb.roomSize.value = 0
-
+          //RESTART 
                 setTimeout(() => {
-                  undeadvoice.start();
-                 }, 3000)
-            // Todo intiate Servo 'waking up'
-
-                 setTimeout(() => {
                    stage = 0;
-                 }, 60000)
+                   serial.write(0);
+                   seance_in_progress = false;
+                   grainplayer.mute = false;
+                  grainbass.mute = false;
+                   grainplayer.start();
+
+                 }, 80000)
+
+
                           // TODO
                   // Play voice recording of the dead
+
+          setTimeout(() => {
+            undeadvoice.start();
+          }, 3000)
+
+          setTimeout(() => {
+            serial.write(5)
+            console.log("WRITING LAST STAGE")
+          }, 40000)
+
       }
 
       // Initiate Stage 3
-      if (smoothedYValue <= 5 && stage == 2 && (new Date() - time > 7000)) {
+      if (smoothedYValue <= 5.5 && stage == 2 && (new Date() - time > 16000)) {
         time = new Date();
         stage = 3;
-         document.getElementById("instructions").innerText = "The spirits have arrived. Now place your left hand over your heart to open your soul to the one you seek."
+         document.getElementById("instructions").innerText = "The spirits have arrived but who knows who may be speaking. Now place your left hand over your heart to open your soul to the one you truly seek."
           serial.write(3);
+          grainvoice.mute = false;
           grainvoice.start();
-          grainbass.volume.value = -20;
-            // Todo intiate Servo 'waking up'
+          grainbass.volume.value = -10;
 
-        //         setTimeout(() => {
-        //           stage = 0;
-        //         }, 10000)
-        //                  // TODO
-                  // Play voice recording of the dead
       }
       // Initiate Stage 2
-      if (smoothedYValue <= 7 && smoothedYValue >= 5.5 && stage == 1 && (new Date() - time > 7000)) {
+      if (smoothedYValue <= 7 && stage == 1 && (new Date() - time > 7000)) {
         time = new Date();
         stage = 2;
         document.getElementById("instructions").innerText = "The spirits are approaching the mortal realm. Continue raising your arms. Do not anger the spirits!"
          serial.write(2);
         grainbass.start();
+        laggingXValue = smoothedXValue;
         }
 
         // Initiate Stage 1
-      if (smoothedYValue <= 9 && smoothedYValue >= 7 && stage == 0 && (new Date() - time > 7000)) {
+      if (smoothedYValue <= 8  && stage == 0 && (new Date() - time > 16000)) {
           time = new Date();
-           document.getElementById("instructions").innerText = "The dead have heard your call. Continue raising your arms. "
+           document.getElementById("instructions").innerText = "The dead have heard your call. Continue raising your arms over your head. "
             // Bass starts
           serial.write(1);
           stage = 1;

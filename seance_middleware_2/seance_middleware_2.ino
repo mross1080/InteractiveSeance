@@ -74,7 +74,14 @@ void loop() {
 
     intFromSerial = Serial.read();
     if(intFromSerial == 0) {
-        initialState();
+//        initialState();
+        started_interaction = false;
+        fadeToBlackBy( leds, NUM_LEDS, 20);
+        int ledPos = beatsin16( 13, 0, NUM_LEDS-1 );
+        leds[ledPos] += CHSV( 0, 0, gHue);
+        pos = 90;
+        FastLED.show();
+
      }
 
   }
@@ -124,6 +131,15 @@ void loop() {
    }
 
   }
+
+  if (intFromSerial == 4) {
+    finalState();
+  }
+  if (intFromSerial == 5) {
+    Fire2012WithPalette();
+    pos = 0;
+  }
+  
   Serial.println(intFromSerial);
     FastLED.show();
     myServo.write(pos);
