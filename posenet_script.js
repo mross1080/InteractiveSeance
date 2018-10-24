@@ -33,7 +33,17 @@ function setup() {
   serial.list(); // list the serial ports
   serial.open("/dev/cu.usbmodem1431"); // open a port
 
+
+
 }
+
+
+   var elem = document.getElementById("myBar");   
+  function setBarProgress(width) {
+    console.log("Setting length to : " + width)
+      elem.style.width = width + '%'; 
+    
+  }
 function serialEvent() {
   // this is called when data is recieved
 }
@@ -126,7 +136,6 @@ var grainvoice = new Tone.GrainPlayer({
 var undeadvoice = new Tone.GrainPlayer({
     "url": "https://s3.us-east-2.amazonaws.com/itpcloudassets/seanceaudiodead.mp3",
         "loop": false,
-    "grainSize": 1,
     "overlap": 0,
     "reverse": false,
 
@@ -235,10 +244,11 @@ function playChord() {
       console.log('lagging x value: ', laggingXValue)
       console.log('stage: ', stage);
       console.log('Time diff: ', new Date() - time)
+      timeDiff = new Date() - time
       if (smoothedYValue > 8 && !seance_in_progress && (new Date() - time > 30000))  {
         stage = 0;
         time = new Date();
-        document.getElementById("instructions").innerText = "TO COMMUNICATE WITH THE DEAD, SIT WITH YOUR FEET IN POSITION ON THE FLOOR AND BEGIN RAISING YOUR ARMS SLOWLY ABOVE YOUR HEAD";
+        document.getElementById("words").innerText = "TO COMMUNICATE WITH THE DEAD, SIT WITH YOUR FEET IN POSITION ON THE FLOOR AND BEGIN RAISING YOUR ARMS SLOWLY ABOVE YOUR HEAD";
         serial.write(0)
         
 
@@ -249,10 +259,12 @@ function playChord() {
       let xCoordinateDiff = laggingXValue - smoothedXValue;
       console.log("x coordinate diff : " + Math.abs(xCoordinateDiff))
          // Initiate Stage 3
-      if (Math.abs(xCoordinateDiff) > 0.2 && stage == 3 && (new Date() - time > 13000)) {
+      if (Math.abs(xCoordinateDiff) > 0.35 && stage == 3 && (new Date() - time > 15000)) {
+        setBarProgress(100)
+
         time = new Date();
         stage = 4;
-         document.getElementById("instructions").innerText = "You may now speak to the spirit. Beware - it may not like what it hears."
+         document.getElementById("words").innerText = "You may now speak to the spirit. Beware - it may not like what it hears."
           serial.write(4);
           grainvoice.mute = true;
           grainbass.mute = true;
@@ -286,32 +298,87 @@ function playChord() {
           }, 40000)
 
       }
+         if (xCoordinateDiff >= 0.1  && timeDiff > 2000 && stage == 3) {
+
+                setBarProgress(25)
+            }
+
+              if (xCoordinateDiff >= 0.3  &&  timeDiff > 5000 && stage == 3) {
+
+                setBarProgress(60)
+            }
+
+                   if ( timeDiff > 10000 && stage == 3) {
+
+                setBarProgress(70)
+            }
+
+               if (xCoordinateDiff >= 0.4  && timeDiff > 13000 && stage == 3) {
+
+                setBarProgress(90)
+            }
+
 
       // Initiate Stage 3
       if (smoothedYValue <= 5.5 && stage == 2 && (new Date() - time > 16000)) {
         time = new Date();
         stage = 3;
-         document.getElementById("instructions").innerText = "The spirits have arrived but who knows who may be speaking. Now place your left hand over your heart to open your soul to the one you truly seek."
+         document.getElementById("words").innerText = "The spirits have arrived but who knows who may be speaking. Now place your left hand over your heart to open your soul to the one you truly seek."
           serial.write(3);
           grainvoice.mute = false;
           grainvoice.start();
           grainbass.volume.value = -10;
+          setBarProgress(0)
+
 
       }
+        if (smoothedYValue <= 6.75  && timeDiff > 4000 && stage == 2) {
+
+                setBarProgress(25)
+            }
+
+              if (smoothedYValue <= 6.35  && timeDiff > 7000 && stage == 2) {
+
+                setBarProgress(40)
+            }
+
+               if (smoothedYValue <= 5.8  &&  timeDiff > 11000 && stage == 2) {
+
+                setBarProgress(80)
+            }
+
+
       // Initiate Stage 2
       if (smoothedYValue <= 7 && stage == 1 && (new Date() - time > 7000)) {
         time = new Date();
         stage = 2;
-        document.getElementById("instructions").innerText = "The spirits are approaching the mortal realm. Continue raising your arms. Do not anger the spirits!"
+        document.getElementById("words").innerText = "The spirits are approaching the mortal realm. Continue raising your arms. Do not anger the spirits!"
          serial.write(2);
         grainbass.start();
         laggingXValue = smoothedXValue;
+      setBarProgress(0)
+
         }
+
+             if (smoothedYValue <= 7.75  && timeDiff > 2000 && stage == 1) {
+
+                setBarProgress(25)
+            }
+
+              if (smoothedYValue <= 7.5  &&  timeDiff > 4000 &&  stage == 1) {
+
+                setBarProgress(50)
+            }
+
+               if (smoothedYValue <= 7.25  && timeDiff > 5000 && stage == 1) {
+
+                setBarProgress(75)
+            }
 
         // Initiate Stage 1
       if (smoothedYValue <= 8  && stage == 0 && (new Date() - time > 16000)) {
           time = new Date();
-           document.getElementById("instructions").innerText = "The dead have heard your call. Continue raising your arms over your head. "
+           document.getElementById("words").innerText = "The dead have heard your call. Continue raising your arms over your head. "
             // Bass starts
           serial.write(1);
           stage = 1;
@@ -319,10 +386,26 @@ function playChord() {
           delay1.feedback.value = 1
         reverb.roomSize.value = .9
                 seance_in_progress = true;
+                                setBarProgress(0)
+
 
 
 
         }
+        // if (smoothedYValue <= 8  && stage == 0 ) {
+
+            if (smoothedYValue <= 8.5 && timeDiff > 8000 && stage == 0) {
+
+                setBarProgress(50)
+            }
+
+              if (smoothedYValue <= 8.2 && timeDiff > 13000 && stage == 0) {
+
+                setBarProgress(77)
+            }
+
+        // }
+
     } else {
         grainbass.stop();
     }
